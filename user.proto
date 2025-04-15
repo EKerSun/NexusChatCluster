@@ -1,0 +1,315 @@
+syntax = "proto3";
+
+package UserProto;
+
+option cc_generic_services = true;
+
+
+// 用户信息
+message User
+{
+    int32 user_id = 1; 
+    bytes user_name = 2;
+    bytes user_state = 3;
+    bytes user_password = 4;
+    string last_offline_time = 5;
+}
+
+// 好友信息
+message FriendUser
+{
+    int32 friend_id = 1; 
+    bytes friend_name = 2;
+    bytes friend_state = 3;
+}
+
+// 好友列表
+message FriendList
+{
+    repeated FriendUser friend_users = 1;
+}
+
+// 群组用户信息
+message GroupUser
+{
+    int32 user_id = 1; 
+    bytes user_name = 2;
+    bytes user_state = 3;
+    bytes user_role = 4;
+}
+
+// 群组信息
+message Group
+{
+    int32 group_id = 1; 
+    bytes group_name = 2;
+    bytes group_description = 3;
+    GroupUserList group_user_list = 4;
+}
+
+// 群组列表
+message GroupList
+{
+    repeated Group groups = 1;
+}
+
+// 群组用户列表
+message GroupUserList
+{
+    repeated GroupUser group_users = 1;
+}
+
+// 消息
+message BroadcastMessage 
+{
+    MessageType message_type = 1;
+    bytes content = 2;
+}
+
+message Message
+{
+    MessageType message_type = 1;
+    Sender sender = 2;
+    Receiver receiver = 3;
+    string time = 4;
+    string content = 5;
+}
+
+// 消息类型
+enum MessageType 
+{
+    UNKNOWN = 0;
+    FRIEND_CHAT = 1;
+    GROUP_CHAT = 2;
+    ADD_FRIEND = 3;
+    DELETE_FRIEND = 4;
+    ADD_GROUP = 5;
+    QUIT_GROUP = 6;
+    DELETE_GROUP = 7;
+}
+
+message Sender
+{
+    int32 user_id = 1;
+    bytes user_name = 2;
+    int32 group_id = 3;
+    bytes group_name = 4;
+}
+
+message Receiver
+{
+    int32 user_id = 1;
+    bytes user_name = 2;
+    int32 group_id = 3;
+    bytes group_name = 4;
+}
+
+message GroupMessage
+{
+    GroupUserList group_user_list = 1;
+    bytes content = 2;
+}
+// 离线消息列表
+message OfflineMessageList
+{
+    repeated Message messages = 1;
+}
+
+// 登录请求
+message LoginRequest
+{
+    int32 user_id = 1;
+    bytes user_password = 2;
+}
+
+// 登录响应
+message LoginResponse
+{
+    int32 error_code = 1; 
+    User user = 2;
+    FriendList friend_list = 3;
+    GroupList group_list = 4;
+    OfflineMessageList offline_message_list = 5;
+}
+
+// 登出请求
+message LogoutRequest
+{
+    int32 user_id = 1;
+}
+
+// 登出响应
+message LogoutResponse 
+{
+    int32 error_code = 1;
+}
+
+// 注册请求
+message RegisterRequest
+{
+    bytes user_name = 2;
+    bytes user_password = 3;
+}
+
+// 注册响应
+message RegisterResponse
+{
+    int32 error_code = 1; 
+    int32 user_id = 2;
+}
+
+// 添加好友请求
+message AddFriendRequest
+{
+    int32 user_id = 1;
+    int32 frined_id = 2;
+}
+
+// 添加好友响应
+message AddFriendResponse
+{
+    int32 error_code = 1;
+    FriendUser friend_user = 2;
+}
+
+// 删除好友请求
+message DeleteFriendRequest
+{
+    int32 user_id = 1;
+    int32 frined_id = 2;
+}
+
+// 删除好友响应
+message DeleteFriendResponse
+{
+    int32 error_code = 1; 
+    int32 frined_id = 2;
+}
+
+// 好友聊天请求
+message FriendChatRequest
+{
+    Sender sender = 1;
+    Receiver receiver = 2;
+    string content = 3;
+    string time = 4;
+
+}
+
+//好友聊天响应
+message FriendChatResponse
+{
+    int32 error_code = 1; 
+}
+
+// 创建群组请求
+message CreateGroupRequest
+{
+    int32 user_id = 1; // 创建者ID
+    bytes group_name = 2; // 群组名称
+    bytes group_description = 3; // 群组描述
+}
+
+// 创建群组响应
+message CreateGroupResponse
+{
+    int32 error_code = 1; 
+    Group group = 2;
+}
+
+// 加入群组请求
+message AddGroupRequest
+{
+    int32 user_id = 1;
+    int32 group_id = 2;
+}
+
+// 加入群组响应
+message AddGroupResponse
+{
+    int32 error_code = 1; 
+    Group group = 2;
+}
+
+// 删除群组请求
+message DeleteGroupRequest
+{
+    int32 user_id = 1;
+    int32 group_id = 2;
+}
+
+// 删除群组响应
+message DeleteGroupResponse
+{
+    int32 error_code = 1; 
+    int32 group_id = 2;
+}
+
+// 退出群组请求
+message QuitGroupRequest
+{
+    int32 user_id = 1;
+    int32 group_id = 2;
+}
+
+// 退出群组响应
+message QuitGroupResponse
+{
+    int32 error_code = 1; 
+    int32 group_id = 2;
+}
+
+// 群组聊天请求
+message GroupChatRequest
+{
+    Sender sender = 1;
+    Receiver receiver = 2;
+    string content = 3;
+    string time = 4;
+}
+
+// 群组聊天响应
+message GroupChatResponse
+{
+    int32 error_code = 1; 
+}
+
+
+
+// 用户注册登录服务
+service UserServiceRpc
+{
+    rpc Login(LoginRequest) returns(LoginResponse);
+    rpc Register(RegisterRequest) returns(RegisterResponse);
+    rpc Logout(LogoutRequest) returns(LogoutResponse);
+}
+
+// 好友服务
+service FriendServiceRpc
+{
+    rpc AddFriend(AddFriendRequest) returns(AddFriendResponse);
+    rpc DeleteFriend(DeleteFriendRequest) returns(DeleteFriendResponse);
+}
+
+// 一对一聊天服务
+service OneChatServiceRpc
+{
+    rpc FriendChat(FriendChatRequest) returns(FriendChatResponse);
+}
+
+// 群组服务
+service GroupServiceRpc
+{
+    rpc CreateGroup(CreateGroupRequest) returns(CreateGroupResponse);
+    rpc AddGroup(AddGroupRequest) returns(AddGroupResponse);
+    rpc DeleteGroup(DeleteGroupRequest) returns(DeleteGroupResponse);
+    rpc QuitGroup(QuitGroupRequest) returns(QuitGroupResponse);
+}
+
+// 群组聊天服务
+service GroupChatServiceRpc
+{
+    rpc GroupChat(GroupChatRequest) returns(GroupChatResponse);
+}
+
+
