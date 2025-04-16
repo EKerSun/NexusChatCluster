@@ -163,4 +163,6 @@ ${ZK_PATH}/bin/zkServer.sh start /opt/zookeeper/zk1/conf/zoo.cfg
 - 缓存数据库
 - 文件传输和视频通话
 - UI
+- 熔断机制和服务降级
+- 结合k8s改造
 
